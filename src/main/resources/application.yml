@@ -80,3 +80,23 @@ logging:
     root: INFO
     com.trainconcierge: INFO
     org.flywaydb: INFO
+
+# ---------------------------------------------------------------------------
+# Phase 4 - automated disruption monitoring.
+# Every value can be overridden by an environment variable using relaxed
+# binding, e.g. TRAINCONCIERGE_MONITORING_FIXED_DELAY_MS, TRAINCONCIERGE_MONITORING_ENABLED,
+# TRAINCONCIERGE_DISRUPTION_DELAY_THRESHOLD_MINUTES, TRAINCONCIERGE_DISRUPTION_LOOKBACK_DAYS,
+# TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS.
+# ---------------------------------------------------------------------------
+trainconcierge:
+  monitoring:
+    # Fixed delay between monitoring runs, in milliseconds.
+    fixed-delay-ms: ${TRAINCONCIERGE_MONITORING_FIXED_DELAY_MS:60000}
+    # Set to false to disable the scheduled monitor (tests, local debugging).
+    enabled: ${TRAINCONCIERGE_MONITORING_ENABLED:true}
+  disruption:
+    # A DELAYED train at or above this many minutes raises a SIGNIFICANT_DELAY event.
+    delay-threshold-minutes: ${TRAINCONCIERGE_DISRUPTION_DELAY_THRESHOLD_MINUTES:30}
+    # Only service dates in [today - lookback-days, today + forward-days] are monitored.
+    lookback-days: ${TRAINCONCIERGE_DISRUPTION_LOOKBACK_DAYS:1}
+    forward-days: ${TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS:7}
