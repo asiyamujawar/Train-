@@ -1,0 +1,53 @@
+### Build output ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+build/
+out/
+*.class
+*.jar
+*.war
+
+### IDE ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+nbproject/private/
+.nb-gradle/
+*.sublime-workspace
+
+### Logs ###
+logs/
+*.log
+*.log.*
+hs_err_pid*
+replay_pid*
+
+### Local secrets / environment overrides ###
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.yaml
+application-local.properties
+*.pem
+*.p12
+*.jks
+secrets/
+
+### OS files ###
+.DS_Store
+Thumbs.db
+desktop.ini
+
+### Misc ###
+*.tmp
+*.bak
+.cache/

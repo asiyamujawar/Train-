@@ -1,0 +1,13 @@
+-- ============================================================================
+-- TrainConcierge :: V1 baseline migration
+-- ============================================================================
+-- Phase 0 intentionally creates NO business tables (no trains, passengers,
+-- journeys, disruptions, recommendations, hotels, notifications or auth).
+--
+-- This baseline migration exists so that Flyway owns the schema from the very
+-- first run: it creates the `flyway_schema_history` table and records version 1
+-- as applied, proving the migration pipeline works end to end.
+--
+-- Business tables will be added in later phases as V2__, V3__, ... in this
+-- same directory (src/main/resources/db/migration).
+-- ============================================================================
