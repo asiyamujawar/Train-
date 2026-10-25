@@ -3,7 +3,8 @@ package com.trainconcierge.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Phase 4 configuration, bound from the {@code trainconcierge.*} namespace.
+ * Phase 4 and Phase 5 configuration, bound from the {@code trainconcierge.*}
+ * namespace.
  *
  * <p>Every property can also be supplied through an environment variable using
  * the standard relaxed-binding rules, for example:
@@ -11,13 +12,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@code TRAINCONCIERGE_MONITORING_ENABLED},
  * {@code TRAINCONCIERGE_DISRUPTION_DELAY_THRESHOLD_MINUTES},
  * {@code TRAINCONCIERGE_DISRUPTION_LOOKBACK_DAYS},
- * {@code TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS}.</p>
+ * {@code TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS},
+ * {@code TRAINCONCIERGE_IMPACT_LOOKBACK_DAYS},
+ * {@code TRAINCONCIERGE_IMPACT_FORWARD_DAYS}.</p>
  */
 @ConfigurationProperties(prefix = "trainconcierge")
 public class TrainConciergeProperties {
 
     private final Monitoring monitoring = new Monitoring();
     private final Disruption disruption = new Disruption();
+    private final Impact impact = new Impact();
 
     public Monitoring getMonitoring() {
         return monitoring;
@@ -25,6 +29,10 @@ public class TrainConciergeProperties {
 
     public Disruption getDisruption() {
         return disruption;
+    }
+
+    public Impact getImpact() {
+        return impact;
     }
 
     public static class Monitoring {
@@ -70,6 +78,31 @@ public class TrainConciergeProperties {
         public void setDelayThresholdMinutes(int delayThresholdMinutes) {
             this.delayThresholdMinutes = delayThresholdMinutes;
         }
+
+        public int getLookbackDays() {
+            return lookbackDays;
+        }
+
+        public void setLookbackDays(int lookbackDays) {
+            this.lookbackDays = lookbackDays;
+        }
+
+        public int getForwardDays() {
+            return forwardDays;
+        }
+
+        public void setForwardDays(int forwardDays) {
+            this.forwardDays = forwardDays;
+        }
+    }
+
+    public static class Impact {
+
+        /** How many days before today are still analysed. */
+        private int lookbackDays = 1;
+
+        /** How many days after today are still analysed. */
+        private int forwardDays = 7;
 
         public int getLookbackDays() {
             return lookbackDays;

@@ -22,6 +22,18 @@ public interface DisruptionEventRepository extends JpaRepository<DisruptionEvent
     Optional<DisruptionEvent> findByActiveKey(String activeKey);
 
     /**
+     * Every ongoing (ACTIVE or ACKNOWLEDGED) event with its train fetched, so
+     * the Phase 5 impact analysis can read the train id outside a transaction.
+     */
+    @Query("""
+            select e from DisruptionEvent e
+            join fetch e.train
+            where e.eventState in :states
+            order by e.id asc
+            """)
+    List<DisruptionEvent> findEventsByStateWithTrain(@Param("states") Collection<EventState> states);
+
+    /**
      * Paginated disruption search with optional filters. The train is fetched
      * eagerly because every response includes the train number and name.
      */

@@ -3,6 +3,7 @@ package com.trainconcierge.repository;
 import com.trainconcierge.entity.Journey;
 import com.trainconcierge.entity.JourneyStatus;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,4 +31,19 @@ public interface JourneyRepository extends JpaRepository<Journey, Long> {
                          @Param("journeyDate") LocalDate journeyDate,
                          @Param("status") JourneyStatus status,
                          Pageable pageable);
+
+    /**
+     * Journeys whose travel date falls inside the Phase 5 impact-analysis window,
+     * with their legs and leg trains fetched so the analysis does not trigger
+     * N+1 queries. Ordered deterministically.
+     */
+    @Query("""
+            select distinct j from Journey j
+            join fetch j.legs l
+            join fetch l.train
+            where j.journeyDate between :from and :to
+            order by j.id asc
+            """)
+    List<Journey> findJourneysInDateRangeWithLegs(@Param("from") LocalDate from,
+                                                  @Param("to") LocalDate to);
 }

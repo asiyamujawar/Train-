@@ -100,3 +100,10 @@ trainconcierge:
     # Only service dates in [today - lookback-days, today + forward-days] are monitored.
     lookback-days: ${TRAINCONCIERGE_DISRUPTION_LOOKBACK_DAYS:1}
     forward-days: ${TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS:7}
+  # ---------------------------------------------------------------------------
+  # Phase 5 - journey impact analysis. Only journeys whose travel date is inside
+  # [today - lookback-days, today + forward-days] are analysed.
+  # ---------------------------------------------------------------------------
+  impact:
+    lookback-days: ${TRAINCONCIERGE_IMPACT_LOOKBACK_DAYS:1}
+    forward-days: ${TRAINCONCIERGE_IMPACT_FORWARD_DAYS:7}
