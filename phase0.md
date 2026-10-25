@@ -567,46 +567,39 @@ explicitly). Hikari pool settings live under `spring.datasource.hikari` and can 
 
 ## 11. Git commands
 
-> ### ⚠️ Read this before running any Git command
->
-> **Your Git repository is rooted at the drive root `C:\`, not at the project folder.**
-> `git rev-parse --show-toplevel` inside the project returns `C:/`.
->
-> Consequences:
-> - `git status` lists **your entire C: drive** (Windows, Program Files, `$Recycle.Bin`, XAMPP, Keil,
->   Python, etc.) as untracked. Those are unrelated to this project.
-> - Because of that, **never** run `git add -A`, `git add .` from `C:\`, or `git commit -a` — you would
->   add unrelated system files.
-> - There are currently **no commits** in that repository (`master` has no commits yet), so nothing is lost.
->
-> **Recommended fix (run once, in the project folder, when you are ready):**
->
-> ```powershell
-> # The C:\ repo has zero commits, so removing it discards nothing.
-> # Only do this if you are certain nothing else in it matters.
-> Remove-Item -Recurse -Force C:\.git
->
-> cd C:\Users\HP\Documents\trae_projects\Railway_New
-> git init
-> ```
->
-> Then continue with the commands below.
->
-> Until you do that, the reviewed-file commands below still work, but every path is recorded relative to
-> `C:\` (e.g. `Users/HP/Documents/trae_projects/Railway_New/pom.xml`).
+**Current state of this repository (verified):**
 
-### Review before staging (from the project folder)
+| Item | Value |
+|---|---|
+| Repository root | `C:\Users\HP\Documents\trae_projects\Railway_New` (the project has its own `.git`) |
+| Branch | `main`, tracking `origin/main` |
+| Remote `origin` | `https://github.com/asiyamujawar/Train-.git` |
+| First commit | `35c3d0d Complete TrainConcierge Phase 0 foundation` — 18 files, pushed |
+| `target/` | ignored — verified with `git check-ignore -v target/` |
+
+> ### ⚠️ One thing to be aware of
+>
+> A stray, **empty** Git repository also exists at the drive root `C:\` (`C:\.git`). It has **no commits**
+> and its `origin` points at a *different* repository (`github-profile.git`). It is unrelated to this
+> project and is not used by the commands below, but:
+> - running `git status` **from `C:\`** still lists your whole drive;
+> - **never** run `git add -A`, `git add .` or `git commit -a` from `C:\`.
+>
+> You can safely leave it alone. If you want it gone (it has zero commits, so nothing is lost):
+> `Remove-Item -Recurse -Force C:\.git` — only if you are certain nothing else in it matters.
+
+### Review before staging (run from the project folder)
 
 ```powershell
 git status
-git status --porcelain --untracked-files=all -- .
 git diff
 ```
 
-Expected: 17 new files, all under the project folder; **`target/` is ignored** (verified with
-`git check-ignore -v target/` → matched by `.gitignore`). No secrets are present —
-`application.yml` contains only `${DB_PASSWORD:}` placeholders and **no real password is committed**.
-Never commit `.env`, `application-local.yml`, keystores, or `*.pem` files.
+A freshly committed tree shows `nothing to commit, working tree clean`.
+
+No secrets are tracked — `application.yml` contains only `${DB_PASSWORD:}` placeholders and **no real
+password is committed**. Never commit `.env`, `application-local.yml`, keystores, `*.pem` files, or real
+credentials.
 
 ### Stage the reviewed files explicitly (no `-A`, no `.`)
 
@@ -630,14 +623,13 @@ git commit -m "Complete TrainConcierge Phase 0 foundation"
 git push
 ```
 
-If the branch has no upstream configured:
+The upstream is already configured, so `-u` is not needed again. For a branch that has no upstream:
 
 ```powershell
 git push -u origin HEAD
 ```
 
-**Nothing in this phase was committed or pushed automatically** — the working tree is exactly as you
-left it, plus the new files.
+**Nothing is committed or pushed automatically in later phases** — run the commands above yourself.
 
 ---
 
