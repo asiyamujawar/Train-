@@ -14,7 +14,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@code TRAINCONCIERGE_DISRUPTION_LOOKBACK_DAYS},
  * {@code TRAINCONCIERGE_DISRUPTION_FORWARD_DAYS},
  * {@code TRAINCONCIERGE_IMPACT_LOOKBACK_DAYS},
- * {@code TRAINCONCIERGE_IMPACT_FORWARD_DAYS}.</p>
+ * {@code TRAINCONCIERGE_IMPACT_FORWARD_DAYS},
+ * {@code TRAINCONCIERGE_RECOMMENDATION_MIN_TRANSFER_BUFFER_MINUTES},
+ * {@code TRAINCONCIERGE_RECOMMENDATION_MAX_RESULTS_PER_IMPACT},
+ * {@code TRAINCONCIERGE_RECOMMENDATION_MAX_IMPACTS_PER_RUN}.</p>
  */
 @ConfigurationProperties(prefix = "trainconcierge")
 public class TrainConciergeProperties {
@@ -22,6 +25,7 @@ public class TrainConciergeProperties {
     private final Monitoring monitoring = new Monitoring();
     private final Disruption disruption = new Disruption();
     private final Impact impact = new Impact();
+    private final Recommendation recommendation = new Recommendation();
 
     public Monitoring getMonitoring() {
         return monitoring;
@@ -33,6 +37,10 @@ public class TrainConciergeProperties {
 
     public Impact getImpact() {
         return impact;
+    }
+
+    public Recommendation getRecommendation() {
+        return recommendation;
     }
 
     public static class Monitoring {
@@ -118,6 +126,49 @@ public class TrainConciergeProperties {
 
         public void setForwardDays(int forwardDays) {
             this.forwardDays = forwardDays;
+        }
+    }
+
+    /**
+     * Phase 6 alternative-train recommendation settings.
+     */
+    public static class Recommendation {
+
+        /**
+         * Minimum minutes that must remain between a replacement's arrival and
+         * the next leg's scheduled departure for the connection to be treated as
+         * reachable.
+         */
+        private int minTransferBufferMinutes = 15;
+
+        /** Maximum number of recommendations kept (and returned) per impact. */
+        private int maxResultsPerImpact = 10;
+
+        /** Maximum number of impacts reconciled by one bounded batch run. */
+        private int maxImpactsPerRun = 50;
+
+        public int getMinTransferBufferMinutes() {
+            return minTransferBufferMinutes;
+        }
+
+        public void setMinTransferBufferMinutes(int minTransferBufferMinutes) {
+            this.minTransferBufferMinutes = minTransferBufferMinutes;
+        }
+
+        public int getMaxResultsPerImpact() {
+            return maxResultsPerImpact;
+        }
+
+        public void setMaxResultsPerImpact(int maxResultsPerImpact) {
+            this.maxResultsPerImpact = maxResultsPerImpact;
+        }
+
+        public int getMaxImpactsPerRun() {
+            return maxImpactsPerRun;
+        }
+
+        public void setMaxImpactsPerRun(int maxImpactsPerRun) {
+            this.maxImpactsPerRun = maxImpactsPerRun;
         }
     }
 }

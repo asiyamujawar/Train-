@@ -60,4 +60,33 @@ public interface TrainStopRepository extends JpaRepository<TrainStop, Long> {
             """)
     List<Object[]> searchTimetables(@Param("sourceStationCode") String sourceStationCode,
                                     @Param("destinationStationCode") String destinationStationCode);
+
+    /**
+     * Candidate replacement trains for one leg (Phase 6): every active train
+     * that stops at both requested stations in the requested order, regardless
+     * of its own ultimate origin/destination. A train visiting the destination
+     * before the source is never returned ({@code src.stopSequence <
+     * dst.stopSequence}), so a reversed itinerary can never become a candidate.
+     *
+     * <p>Row layout:
+     * {@code [Train, sourceStation, destinationStation, sourceDepartureTime,
+     * sourceDayOffset, destinationArrivalTime, destinationDayOffset]}.</p>
+     */
+    @Query("""
+            select t, src.station, dst.station,
+                   src.departureTime, src.dayOffset,
+                   dst.arrivalTime, dst.dayOffset
+            from Train t, TrainStop src, TrainStop dst
+            where src.train = t
+              and dst.train = t
+              and src.station.stationCode = :sourceStationCode
+              and dst.station.stationCode = :destinationStationCode
+              and src.stopSequence < dst.stopSequence
+              and t.active = true
+              and src.station.active = true
+              and dst.station.active = true
+            order by src.departureTime asc, t.trainNumber asc, t.id asc
+            """)
+    List<Object[]> findCandidateTrains(@Param("sourceStationCode") String sourceStationCode,
+                                       @Param("destinationStationCode") String destinationStationCode);
 }

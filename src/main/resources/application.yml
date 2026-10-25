@@ -107,3 +107,15 @@ trainconcierge:
   impact:
     lookback-days: ${TRAINCONCIERGE_IMPACT_LOOKBACK_DAYS:1}
     forward-days: ${TRAINCONCIERGE_IMPACT_FORWARD_DAYS:7}
+  # ---------------------------------------------------------------------------
+  # Phase 6 - alternative train recommendations. Deterministic candidate search
+  # and ranking over Phases 1-5 data; no external calls.
+  # ---------------------------------------------------------------------------
+  recommendation:
+    # Minimum minutes a replacement must leave between its arrival and the next
+    # leg's scheduled departure for the connection to be treated as reachable.
+    min-transfer-buffer-minutes: ${TRAINCONCIERGE_RECOMMENDATION_MIN_TRANSFER_BUFFER_MINUTES:15}
+    # Maximum number of recommendations kept (and returned) per impact.
+    max-results-per-impact: ${TRAINCONCIERGE_RECOMMENDATION_MAX_RESULTS_PER_IMPACT:10}
+    # Maximum number of impacts reconciled by one bounded batch run.
+    max-impacts-per-run: ${TRAINCONCIERGE_RECOMMENDATION_MAX_IMPACTS_PER_RUN:50}

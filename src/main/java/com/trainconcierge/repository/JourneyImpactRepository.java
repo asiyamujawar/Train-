@@ -4,6 +4,7 @@ import com.trainconcierge.entity.ImpactSeverity;
 import com.trainconcierge.entity.ImpactState;
 import com.trainconcierge.entity.ImpactType;
 import com.trainconcierge.entity.JourneyImpact;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,4 +56,26 @@ public interface JourneyImpactRepository extends JpaRepository<JourneyImpact, Lo
                                @Param("impactState") ImpactState impactState,
                                @Param("minDelayMinutes") Integer minDelayMinutes,
                                Pageable pageable);
+
+    /**
+     * Ongoing impacts whose journey falls inside a service-date window, with the
+     * journey, leg, leg train and disruption event fetched. Used by the Phase 6
+     * bounded batch run; the {@link Pageable} bounds the number of impacts
+     * reconciled in a single cycle.
+     */
+    @Query("""
+            select i from JourneyImpact i
+            join fetch i.journey j
+            left join fetch i.journeyLeg l
+            left join fetch l.train
+            join fetch i.disruptionEvent e
+            join fetch e.train
+            where i.impactState = :state
+              and j.journeyDate between :from and :to
+            order by i.id asc
+            """)
+    List<JourneyImpact> findActiveImpactsInJourneyDateRange(@Param("state") ImpactState state,
+                                                           @Param("from") LocalDate from,
+                                                           @Param("to") LocalDate to,
+                                                           Pageable pageable);
 }
