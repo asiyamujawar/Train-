@@ -6,7 +6,7 @@ spring:
     # JDBC URL assembled from environment variables with safe local defaults.
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:trainconcierge_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:P@t!3nc3}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       pool-name: trainconcierge-hikari
@@ -14,6 +14,13 @@ spring:
       minimum-idle: 2
       connection-timeout: 30000
       validation-timeout: 5000
+
+  # Pagination safeguards for the Phase 1 list endpoints.
+  data:
+    web:
+      pageable:
+        default-page-size: 20
+        max-page-size: 100
 
   jpa:
     # Flyway owns the schema; Hibernate must never create/alter/drop tables.
@@ -57,7 +64,7 @@ info:
   app:
     name: TrainConcierge
     version: 0.0.1-SNAPSHOT
-    description: TrainConcierge backend foundation (Phase 0)
+    description: TrainConcierge backend - railway master data and timetables (Phase 1)
 
 springdoc:
   api-docs:

@@ -20,8 +20,9 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("TrainConcierge API")
                         .version("0.0.1")
-                        .description("TrainConcierge backend. Phase 0 exposes only foundation endpoints "
-                                + "(application status and validation demo). Business modules are added in later phases.")
+                        .description("TrainConcierge backend. Phase 1 exposes railway master data "
+                                + "(stations, trains, train stops) and train timetables, including a "
+                                + "source-to-destination timetable search.")
                         .contact(new Contact().name("TrainConcierge Team"))
                         .license(new License().name("Academic project")));
     }

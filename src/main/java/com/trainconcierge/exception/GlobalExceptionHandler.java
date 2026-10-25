@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -86,6 +89,91 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 message,
                 request.getRequestURI()));
+    }
+
+    /** Business rule broken by an otherwise well-formed request (Phase 1). */
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidRequest(InvalidRequestException ex,
+                                                                 HttpServletRequest request) {
+        return ResponseEntity.badRequest().body(ApiErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()));
+    }
+
+    /** Duplicate or conflicting data (Phase 1). */
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflict(ConflictException ex,
+                                                           HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiErrorResponse.of(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()));
+    }
+
+    /**
+     * Safety net for database constraints (unique keys, foreign keys). The
+     * underlying SQL is logged but never returned to the client.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+                                                                        HttpServletRequest request) {
+        log.warn("Data integrity violation while processing {}: {}",
+                request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiErrorResponse.of(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                "The request conflicts with existing data or a database constraint",
+                request.getRequestURI()));
+    }
+
+    /** Invalid sort property supplied in a pagination request. */
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidSort(PropertyReferenceException ex,
+                                                             HttpServletRequest request) {
+        String message = "Invalid sort property '%s'".formatted(ex.getPropertyName());
+
+        return ResponseEntity.badRequest().body(ApiErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                message,
+                request.getRequestURI()));
+    }
+
+    /**
+     * Spring Data JPA wraps a bad sort property (or a malformed pageable) in an
+     * {@code InvalidDataAccessApiUsageException}, so the dedicated handler above
+     * never sees it. Unwrap the cause chain to report the offending property.
+     */
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidDataAccessUsage(InvalidDataAccessApiUsageException ex,
+                                                                        HttpServletRequest request) {
+        String property = findInvalidSortProperty(ex);
+        String message = property == null
+                ? "Invalid pagination or sorting parameters"
+                : "Invalid sort property '%s'".formatted(property);
+
+        log.debug("Invalid data access usage for {}: {}", request.getRequestURI(), ex.getMessage());
+
+        return ResponseEntity.badRequest().body(ApiErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                message,
+                request.getRequestURI()));
+    }
+
+    private static String findInvalidSortProperty(Throwable ex) {
+        Throwable current = ex;
+        while (current != null) {
+            if (current instanceof PropertyReferenceException propertyReferenceException) {
+                return propertyReferenceException.getPropertyName();
+            }
+            current = current.getCause();
+        }
+        return null;
     }
 
     /** Explicit not-found signal used by business modules in later phases. */
