@@ -20,6 +20,8 @@ public interface TrainStopRepository extends JpaRepository<TrainStop, Long> {
 
     Optional<TrainStop> findByIdAndTrainId(Long id, Long trainId);
 
+    Optional<TrainStop> findByTrainIdAndStationId(Long trainId, Long stationId);
+
     boolean existsByTrainIdAndStopSequence(Long trainId, Integer stopSequence);
 
     boolean existsByTrainIdAndStopSequenceAndIdNot(Long trainId, Integer stopSequence, Long id);

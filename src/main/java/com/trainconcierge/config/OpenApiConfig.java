@@ -15,15 +15,11 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI trainConciergeOpenApi() {
+    public OpenAPI trainConciergeOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("TrainConcierge API")
-                        .version("0.0.1")
-                        .description("TrainConcierge backend. Phase 1 exposes railway master data "
-                                + "(stations, trains, train stops) and train timetables, including a "
-                                + "source-to-destination timetable search.")
-                        .contact(new Contact().name("TrainConcierge Team"))
-                        .license(new License().name("Academic project")));
+                        .version("0.0.1-SNAPSHOT")
+                        .description("TrainConcierge backend. Phase 2 adds passenger management and atomic journey planning with multi-leg itinerary validation."));
     }
 }
