@@ -119,3 +119,14 @@ trainconcierge:
     max-results-per-impact: ${TRAINCONCIERGE_RECOMMENDATION_MAX_RESULTS_PER_IMPACT:10}
     # Maximum number of impacts reconciled by one bounded batch run.
     max-impacts-per-run: ${TRAINCONCIERGE_RECOMMENDATION_MAX_IMPACTS_PER_RUN:50}
+  # ---------------------------------------------------------------------------
+  # Phase 7 - hotel recommendations. Deterministic overnight-stay decision plus
+  # ranked hotel suggestions over Phases 1-6 data; no external calls, no booking.
+  # ---------------------------------------------------------------------------
+  hotel:
+    # Development-only demo hotel seeding. Set to false in production.
+    demo-seed-enabled: ${TRAINCONCIERGE_HOTEL_DEMO_SEED_ENABLED:true}
+    # A known delay at or above this many minutes makes same-day travel impractical.
+    overnight-delay-threshold-minutes: ${TRAINCONCIERGE_HOTEL_OVERNIGHT_DELAY_THRESHOLD_MINUTES:480}
+    # Maximum number of hotels returned by one recommendation evaluation.
+    max-recommendations: ${TRAINCONCIERGE_HOTEL_MAX_RECOMMENDATIONS:10}

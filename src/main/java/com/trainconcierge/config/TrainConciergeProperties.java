@@ -17,7 +17,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@code TRAINCONCIERGE_IMPACT_FORWARD_DAYS},
  * {@code TRAINCONCIERGE_RECOMMENDATION_MIN_TRANSFER_BUFFER_MINUTES},
  * {@code TRAINCONCIERGE_RECOMMENDATION_MAX_RESULTS_PER_IMPACT},
- * {@code TRAINCONCIERGE_RECOMMENDATION_MAX_IMPACTS_PER_RUN}.</p>
+ * {@code TRAINCONCIERGE_RECOMMENDATION_MAX_IMPACTS_PER_RUN},
+ * {@code TRAINCONCIERGE_HOTEL_DEMO_SEED_ENABLED},
+ * {@code TRAINCONCIERGE_HOTEL_OVERNIGHT_DELAY_THRESHOLD_MINUTES},
+ * {@code TRAINCONCIERGE_HOTEL_MAX_RECOMMENDATIONS}.</p>
  */
 @ConfigurationProperties(prefix = "trainconcierge")
 public class TrainConciergeProperties {
@@ -26,6 +29,7 @@ public class TrainConciergeProperties {
     private final Disruption disruption = new Disruption();
     private final Impact impact = new Impact();
     private final Recommendation recommendation = new Recommendation();
+    private final Hotel hotel = new Hotel();
 
     public Monitoring getMonitoring() {
         return monitoring;
@@ -41,6 +45,10 @@ public class TrainConciergeProperties {
 
     public Recommendation getRecommendation() {
         return recommendation;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
     }
 
     public static class Monitoring {
@@ -169,6 +177,52 @@ public class TrainConciergeProperties {
 
         public void setMaxImpactsPerRun(int maxImpactsPerRun) {
             this.maxImpactsPerRun = maxImpactsPerRun;
+        }
+    }
+
+    /**
+     * Phase 7 hotel recommendation settings.
+     */
+    public static class Hotel {
+
+        /**
+         * Whether the development-only demo hotels are seeded at startup. Set to
+         * false (or {@code TRAINCONCIERGE_HOTEL_DEMO_SEED_ENABLED=false}) in
+         * production so fictional hotel data is never inserted.
+         */
+        private boolean demoSeedEnabled = true;
+
+        /**
+         * A known delay at or above this many minutes is treated as making
+         * same-day onward travel impractical (an overnight stay is likely).
+         */
+        private int overnightDelayThresholdMinutes = 480;
+
+        /** Maximum number of hotels returned by one recommendation evaluation. */
+        private int maxRecommendations = 10;
+
+        public boolean isDemoSeedEnabled() {
+            return demoSeedEnabled;
+        }
+
+        public void setDemoSeedEnabled(boolean demoSeedEnabled) {
+            this.demoSeedEnabled = demoSeedEnabled;
+        }
+
+        public int getOvernightDelayThresholdMinutes() {
+            return overnightDelayThresholdMinutes;
+        }
+
+        public void setOvernightDelayThresholdMinutes(int overnightDelayThresholdMinutes) {
+            this.overnightDelayThresholdMinutes = overnightDelayThresholdMinutes;
+        }
+
+        public int getMaxRecommendations() {
+            return maxRecommendations;
+        }
+
+        public void setMaxRecommendations(int maxRecommendations) {
+            this.maxRecommendations = maxRecommendations;
         }
     }
 }
